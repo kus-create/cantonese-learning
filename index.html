@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>広東語初級コース - Unit 1 (插畫版)</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+HK:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Noto Sans JP', 'Noto Sans HK', sans-serif; }
+        .cantonese-text { font-family: 'Noto Sans HK', sans-serif; }
+        
+        /* Smooth transitions */
+        .card-hover { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15); }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* Microphone animation */
+        .mic-wave {
+            width: 8px; height: 8px; border-radius: 4px; background-color: #ef4444;
+            animation: wave 0.5s infinite alternate;
+        }
+        @keyframes wave {
+            0% { height: 8px; transform: translateY(0); }
+            100% { height: 24px; transform: translateY(-8px); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- 1. SVG Illustrations Library ---
+        
+        const Icons = {
+            Scroll: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <path d="M20 15C20 10 25 5 30 5H80C85 5 90 10 90 15V85C90 90 85 95 80 95H30C25 95 20 90 20 85V15Z" fill="#fef3c7" stroke="#d97706" strokeWidth="3"/>
+                    <path d="M35 25H75M35 40H75M35 55H60" stroke="#d97706" strokeWidth="3" strokeLinecap="round"/>
+                    <path d="M20 15C20 20 25 20 30 15" fill="none" stroke="#d97706" strokeWidth="3"/>
+                    <path d="M20 85C20 90 25 90 30 85" fill="none" stroke="#d97706" strokeWidth="3"/>
+                </svg>
+            ),
+            Book: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <rect x="15" y="20" width="70" height="60" rx="4" fill="#60a5fa"/>
+                    <path d="M15 20C15 20 25 15 50 15C75 15 85 20 85 20" fill="none" stroke="#2563eb" strokeWidth="3"/>
+                    <rect x="25" y="30" width="50" height="40" rx="2" fill="#dbeafe"/>
+                    <path d="M50 15V80" stroke="#2563eb" strokeWidth="2"/>
+                </svg>
+            ),
+            Exam: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <rect x="25" y="10" width="50" height="80" fill="white" stroke="#94a3b8" strokeWidth="3"/>
+                    <path d="M35 25H65M35 40H65M35 55H65" stroke="#cbd5e1" strokeWidth="3" strokeLinecap="round"/>
+                    <path d="M40 70L50 80L75 50" fill="none" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+            ),
+            Clock: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <circle cx="50" cy="50" r="40" fill="#f3f4f6" stroke="#4b5563" strokeWidth="4"/>
+                    <path d="M50 20V50L70 50" fill="none" stroke="#ef4444" strokeWidth="4" strokeLinecap="round"/>
+                    <circle cx="50" cy="50" r="4" fill="#4b5563"/>
+                    <path d="M50 10V15 M90 50H85 M50 90V85 M10 50H15" stroke="#9ca3af" strokeWidth="3"/>
+                </svg>
+            ),
+            Shop: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <path d="M20 40L25 20H75L80 40" fill="#f87171"/>
+                    <path d="M20 40H80V80H20V40Z" fill="#ffedd5"/>
+                    <path d="M20 40C20 45 26 45 26 40C26 45 32 45 32 40C32 45 38 45 38 40C38 45 44 45 44 40C44 45 50 45 50 40C50 45 56 45 56 40C56 45 62 45 62 40C62 45 68 45 68 40C68 45 74 45 74 40C74 45 80 45 80 40" fill="#f87171"/>
+                    <rect x="30" y="55" width="40" height="25" fill="#bae6fd"/>
+                </svg>
+            ),
+            Briefcase: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <rect x="20" y="35" width="60" height="45" rx="4" fill="#a8a29e"/>
+                    <path d="M35 35V25C35 20 40 20 40 20H60C60 20 65 20 65 25V35" fill="none" stroke="#44403c" strokeWidth="4"/>
+                    <path d="M20 45H80" stroke="#44403c" strokeWidth="2"/>
+                    <rect x="45" y="50" width="10" height="15" fill="#e7e5e4"/>
+                </svg>
+            ),
+            Ball: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <circle cx="50" cy="50" r="40" fill="white" stroke="#1e293b" strokeWidth="3"/>
+                    <path d="M30 40L50 30L70 40L60 60L40 60Z" fill="#1e293b"/>
+                    <path d="M30 40L15 35 M50 30V10 M70 40L85 35 M60 60L75 80 M40 60L25 80" stroke="#1e293b" strokeWidth="2"/>
+                </svg>
+            ),
+            Grandma: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <circle cx="50" cy="50" r="35" fill="#fde68a"/>
+                    <path d="M25 45C25 30 35 20 50 20C65 20 75 30 75 45" fill="#d1d5db"/>
+                    <circle cx="50" cy="15" r="10" fill="#9ca3af"/>
+                    <circle cx="35" cy="55" r="4" fill="#1f2937"/>
+                    <circle cx="65" cy="55" r="4" fill="#1f2937"/>
+                    <path d="M30 60Q50 75 70 60" fill="none" stroke="#ef4444" strokeWidth="2"/>
+                    <g opacity="0.5"><circle cx="35" cy="55" r="8" fill="none" stroke="#4b5563" strokeWidth="2"/><circle cx="65" cy="55" r="8" fill="none" stroke="#4b5563" strokeWidth="2"/><path d="M43 55H57" stroke="#4b5563" strokeWidth="2"/></g>
+                </svg>
+            ),
+            Many: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <rect x="20" y="60" width="20" height="20" rx="4" fill="#fca5a5"/>
+                    <rect x="45" y="60" width="20" height="20" rx="4" fill="#fca5a5"/>
+                    <rect x="70" y="60" width="20" height="20" rx="4" fill="#fca5a5"/>
+                    <rect x="32" y="35" width="20" height="20" rx="4" fill="#93c5fd"/>
+                    <rect x="58" y="35" width="20" height="20" rx="4" fill="#93c5fd"/>
+                    <rect x="45" y="10" width="20" height="20" rx="4" fill="#86efac"/>
+                </svg>
+            ),
+            Drag: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <rect x="50" y="30" width="40" height="40" fill="#d1d5db" stroke="#4b5563" strokeWidth="2"/>
+                    <path d="M50 50H20" stroke="#1f2937" strokeWidth="4"/>
+                    <path d="M25 40L15 50L25 60" fill="none" stroke="#1f2937" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="60" cy="75" r="5" fill="#4b5563"/>
+                    <circle cx="80" cy="75" r="5" fill="#4b5563"/>
+                </svg>
+            ),
+            Handshake: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <path d="M20 60L40 50L50 60L40 70Z" fill="#fdba74"/>
+                    <path d="M80 60L60 50L50 60L60 70Z" fill="#ffcc80"/>
+                    <path d="M10 80L20 60" stroke="#60a5fa" strokeWidth="10" strokeLinecap="round"/>
+                    <path d="M90 80L80 60" stroke="#4ade80" strokeWidth="10" strokeLinecap="round"/>
+                </svg>
+            ),
+            Gift: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <rect x="20" y="40" width="60" height="45" fill="#f472b6"/>
+                    <rect x="45" y="40" width="10" height="45" fill="#fce7f3"/>
+                    <rect x="15" y="30" width="70" height="15" rx="2" fill="#ec4899"/>
+                    <path d="M50 30L40 15C35 10 45 5 50 15C55 5 65 10 60 15L50 30" fill="#fbcfe8"/>
+                </svg>
+            ),
+            Tea: () => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <path d="M25 35H75V70C75 80 65 85 50 85C35 85 25 80 25 70V35Z" fill="#fffbeb" stroke="#d97706" strokeWidth="2"/>
+                    <path d="M75 40C85 40 85 60 75 60" fill="none" stroke="#d97706" strokeWidth="3"/>
+                    <path d="M35 20L40 10 M50 20L50 8 M65 20L60 10" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+            ),
+            // Generic Number Icon Component to avoid repetitive code
+            NumberIcon: ({ num }) => (
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <circle cx="50" cy="50" r="45" fill="#eff6ff" stroke="#3b82f6" strokeWidth="2"/>
+                    <text x="50" y="70" textAnchor="middle" fontSize="60" fill="#2563eb" fontWeight="bold" fontFamily="monospace">{num}</text>
+                </svg>
+            )
+        };
+
+        // --- Data ---
+
+        const tonesData = [
+            { tone: 1, jyutping: "si1", char: "詩", Illustration: Icons.Scroll, desc: "高平", meaning: "詩 (Poem)", pitch: "55" },
+            { tone: 2, jyutping: "si2", char: "史", Illustration: Icons.Book, desc: "高昇", meaning: "歴史 (History)", pitch: "25" },
+            { tone: 3, jyutping: "si3", char: "試", Illustration: Icons.Exam, desc: "中平", meaning: "試す (Try)", pitch: "33" },
+            { tone: 4, jyutping: "si4", char: "時", Illustration: Icons.Clock, desc: "低降", meaning: "時間 (Time)", pitch: "21" },
+            { tone: 5, jyutping: "si5", char: "市", Illustration: Icons.Shop, desc: "低昇", meaning: "市場 (Market)", pitch: "23" },
+            { tone: 6, jyutping: "si6", char: "事", Illustration: Icons.Briefcase, desc: "低平", meaning: "事 (Matter)", pitch: "22" },
+        ];
+
+        const aspirateData = [
+            { type: "Unaspirated (無気音)", label: "b", word: "波", Illustration: Icons.Ball, jp: "bo1", meaning: "ボール", hint: "息を止める" },
+            { type: "Aspirated (有気音)", label: "p", word: "婆", Illustration: Icons.Grandma, jp: "po4", meaning: "お婆さん", hint: "息を吐く！" },
+            { type: "Unaspirated (無気音)", label: "d", word: "多", Illustration: Icons.Many, jp: "do1", meaning: "多い", hint: "息を止める" },
+            { type: "Aspirated (有気音)", label: "t", word: "拖", Illustration: Icons.Drag, jp: "to1", meaning: "引きずる", hint: "息を吐く！" },
+        ];
+
+        // Combined practice words with 0-9 added
+        // Multi-syllable words + Homophone Tolerance + Digit Tolerance
+        const practiceWords = [
+            { 
+                id: 'greet1', word: "你好", jyutping: "nei5 hou2", Illustration: Icons.Handshake, meaning: "こんにちは", difficulty: 1, 
+                variants: ["你好", "雷好", "nei hou", "lay ho"] 
+            },
+            { 
+                id: 'greet2', word: "多謝", jyutping: "do1 ze6", Illustration: Icons.Gift, meaning: "ありがとう (礼物)", difficulty: 2, 
+                variants: ["多謝", "多谢", "do ze", "dor ze", "do je"] 
+            },
+            { 
+                id: 'greet3', word: "唔該", jyutping: "m4 goi1", Illustration: Icons.Tea, meaning: "すみません/ありがとう", difficulty: 2, 
+                variants: ["唔該", "唔该", "m goi", "mm goi", "ng goi"] 
+            },
+            
+            // Tone Words - Multi-syllable + Homophone tolerance
+            { 
+                id: 'tone1', word: "詩人", jyutping: "si1 jan4", Illustration: Icons.Scroll, meaning: "詩人 (Poet)", difficulty: 1, 
+                variants: ["詩人", "si jan", "si yan", "sze yan", "c yan", "私人"] 
+            },
+            { 
+                id: 'tone4', word: "時間", jyutping: "si4 gaan3", Illustration: Icons.Clock, meaning: "時間 (Time)", difficulty: 1, 
+                variants: ["時間", "si gaan", "time", "si gan", "sze gaan"] 
+            },
+            
+            // Numbers 0-9 - Multi-syllable words + Digit/English/Mixed variants
+            { 
+                id: 'n0', word: "零食", jyutping: "ling4 sik6", Illustration: () => <Icons.NumberIcon num="0" />, meaning: "お菓子 (Zero -> Snacks)", difficulty: 1, 
+                variants: ["零食", "ling sik", "0 sik", "zero sik", "ling shik"] 
+            },
+            { 
+                id: 'n1', word: "一個", jyutping: "jat1 go3", Illustration: () => <Icons.NumberIcon num="1" />, meaning: "一個 (One piece)", difficulty: 1, 
+                variants: ["一個", "jat go", "yat go", "1 go", "one go", "一嗰", "一箇"] 
+            },
+            { 
+                id: 'n2', word: "第二", jyutping: "dai6 ji6", Illustration: () => <Icons.NumberIcon num="2" />, meaning: "第二 (The Second)", difficulty: 1, 
+                variants: ["第二", "dai ji", "dai yi", "dai 2", "dai two", "第2"] 
+            },
+            { 
+                id: 'n3', word: "三文治", jyutping: "saam1 man4 zi6", Illustration: () => <Icons.NumberIcon num="3" />, meaning: "サンドイッチ (Sandwich)", difficulty: 1, 
+                variants: ["三文治", "saam man zi", "sandwich", "3 man zi", "sam man ji", "3文治"] 
+            },
+            { 
+                id: 'n4', word: "四季", jyutping: "sei3 gwai3", Illustration: () => <Icons.NumberIcon num="4" />, meaning: "四季 (Four Seasons)", difficulty: 1, 
+                variants: ["四季", "sei gwai", "4 gwai", "four gwai", "say gwai"] 
+            },
+            { 
+                id: 'n5', word: "五個", jyutping: "ng5 go3", Illustration: () => <Icons.NumberIcon num="5" />, meaning: "五個 (Five pieces)", difficulty: 2, 
+                variants: ["五個", "ng5 go3", "ng go", "m go", "5 go", "five go"] 
+            },
+            { 
+                id: 'n6', word: "六點鐘", jyutping: "luk6 dim2 zung1", Illustration: () => <Icons.NumberIcon num="6" />, meaning: "六時 (6 O'clock)", difficulty: 2, 
+                variants: ["六點鐘", "luk dim zung", "6 dim zung", "six dim zung", "lok dim zung", "6點鐘", "6点钟", "六点钟", "六點", "6點"] 
+            },
+            { 
+                id: 'n7', word: "七月", jyutping: "cat1 jyut6", Illustration: () => <Icons.NumberIcon num="7" />, meaning: "七月 (July)", difficulty: 3, 
+                variants: ["七月", "cat jyut", "7 jyut", "seven jyut", "chat yut", "7月"] 
+            },
+            { 
+                id: 'n8', word: "八達通", jyutping: "baat3 daat6 tung1", Illustration: () => <Icons.NumberIcon num="8" />, meaning: "オクトパス (Octopus Card)", difficulty: 3, 
+                variants: ["八達通", "baat daat tung", "octopus", "8 daat tung", "bat dat tung", "八达通", "8達通"] 
+            },
+            { 
+                id: 'n9', word: "九龍", jyutping: "gau2 lung4", Illustration: () => <Icons.NumberIcon num="9" />, meaning: "九龍 (Kowloon)", difficulty: 2, 
+                variants: ["九龍", "gau lung", "kowloon", "9 lung", "nine lung", "9龍"] 
+            },
+            { 
+                id: 'n10', word: "十字", jyutping: "sap6 zi6", Illustration: () => <Icons.NumberIcon num="10" />, meaning: "十字 (Cross)", difficulty: 3, 
+                variants: ["十字", "sap zi", "10 zi", "ten zi", "shap ji", "sub ji", "10字"] 
+            },
+        ];
+
+        // --- Components ---
+
+        const NavButton = ({ active, label, onClick, icon }) => (
+            <button 
+                onClick={onClick}
+                className={`flex items-center space-x-2 px-5 py-3 rounded-full transition-all duration-300 border font-bold ${
+                    active 
+                    ? 'bg-red-500 border-red-500 text-white shadow-lg shadow-red-200 transform scale-105' 
+                    : 'bg-white border-slate-200 text-slate-500 hover:bg-red-50 hover:text-red-500 hover:border-red-100'
+                }`}
+            >
+                <i className={`fas ${icon}`}></i>
+                <span className="hidden sm:inline">{label}</span>
+            </button>
+        );
+
+        const AudioBtn = ({ text }) => {
+            const speak = (e) => {
+                e.stopPropagation();
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-HK';
+                utterance.rate = 0.8;
+                
+                const voices = window.speechSynthesis.getVoices();
+                const hkVoice = voices.find(v => v.lang === 'zh-HK' || v.lang === 'yue-HK') 
+                                || voices.find(v => v.lang.includes('HK'))
+                                || voices.find(v => v.lang.startsWith('zh'));
+                if (hkVoice) utterance.voice = hkVoice;
+
+                window.speechSynthesis.speak(utterance);
+            };
+
+            useEffect(() => {
+                const loadVoices = () => window.speechSynthesis.getVoices();
+                loadVoices();
+                if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                    window.speechSynthesis.onvoiceschanged = loadVoices;
+                }
+            }, []);
+
+            return (
+                <button 
+                    onClick={speak} 
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white transition-all shadow-sm z-20 relative"
+                    title="発音を聞く"
+                >
+                    <i className="fas fa-volume-up text-lg"></i>
+                </button>
+            );
+        };
+
+        // --- Sections ---
+
+        const ToneSection = () => (
+            <div className="animate-fade-in space-y-8">
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl">
+                        <i className="fas fa-music"></i>
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-800">声調 (The 6 Tones)</h2>
+                        <p className="text-slate-500">ドレミの音階でイメージしましょう。</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {tonesData.map((t) => (
+                        <div key={t.tone} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm card-hover relative overflow-hidden group">
+                            
+                            {/* Layout: Content Left, Number Right */}
+                            <div className="flex justify-between items-stretch">
+                                
+                                {/* Left Content */}
+                                <div className="flex flex-col justify-between z-10 w-2/3">
+                                    <div className="flex items-center space-x-3 mb-4">
+                                        <div className="w-14 h-14 bg-slate-50 rounded-2xl p-2 border border-slate-100">
+                                            <t.Illustration />
+                                        </div>
+                                        <AudioBtn text={t.char} />
+                                    </div>
+                                    
+                                    <div>
+                                        <div className="text-4xl font-black text-slate-800 cantonese-text mb-1">{t.char}</div>
+                                        <div className="text-lg font-mono font-bold text-red-500">{t.jyutping}</div>
+                                        <div className="text-sm text-slate-400 mt-2 font-medium">{t.meaning}</div>
+                                    </div>
+                                </div>
+
+                                {/* Right Identifier (The Number) */}
+                                <div className="w-1/3 flex flex-col items-end justify-center border-l border-slate-50 pl-4">
+                                    <span className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-1">Tone</span>
+                                    <span className="text-6xl font-black text-slate-100 group-hover:text-blue-100 transition-colors">
+                                        {t.tone}
+                                    </span>
+                                    <div className="mt-4 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                        <div 
+                                            className="h-full bg-blue-400" 
+                                            style={{
+                                                width: '40%', 
+                                                marginLeft: t.tone === 1 ? '60%' : t.tone === 4 ? '0%' : '30%' 
+                                            }}
+                                        ></div>
+                                    </div>
+                                    <span className="text-xs font-mono text-slate-300 mt-1">{t.pitch}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        const ConsonantSection = () => (
+            <div className="animate-fade-in space-y-8">
+                 <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center text-2xl">
+                        <i className="fas fa-wind"></i>
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-800">有気音 vs 無気音</h2>
+                        <p className="text-slate-500">息を強く吐くか（有気）、我慢するか（無気）の違いです。</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {aspirateData.map((item, idx) => (
+                        <div key={idx} className={`rounded-3xl p-6 border-2 card-hover ${item.type.includes("Unaspirated") ? 'bg-white border-slate-100' : 'bg-green-50/30 border-green-100'}`}>
+                            
+                            <div className="flex justify-between items-stretch">
+                                {/* Left Content */}
+                                <div className="flex flex-col justify-between w-2/3">
+                                    <div className="flex items-center space-x-3 mb-4">
+                                        <div className="w-16 h-16 bg-white rounded-2xl p-2 border border-slate-100 shadow-sm">
+                                            <item.Illustration />
+                                        </div>
+                                        <AudioBtn text={item.word} />
+                                    </div>
+                                    
+                                    <div>
+                                        <div className="text-5xl font-black text-slate-800 cantonese-text mb-1">{item.word}</div>
+                                        <div className="text-xl font-mono font-bold text-red-500">{item.jp}</div>
+                                        
+                                        <div className="mt-4 flex items-start space-x-2">
+                                            <i className="fas fa-lightbulb text-yellow-400 mt-1"></i>
+                                            <p className="text-sm font-bold text-slate-600">{item.hint}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right Identifier (bpdt) - Layout matches Tone Card */}
+                                <div className="w-1/3 flex flex-col items-end justify-center border-l border-slate-200/50 pl-4">
+                                    <span className={`text-xs font-bold uppercase tracking-widest mb-1 ${item.type.includes("Unaspirated") ? 'text-slate-400' : 'text-green-500'}`}>
+                                        {item.type.includes("Un") ? "Stop" : "Blow"}
+                                    </span>
+                                    <span className={`text-7xl font-black transition-colors ${item.type.includes("Unaspirated") ? 'text-slate-200' : 'text-green-200'}`}>
+                                        {item.label}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        const PracticeCorner = () => {
+            const [selectedWord, setSelectedWord] = useState(practiceWords[0]);
+            const [isRecording, setIsRecording] = useState(false);
+            const [feedback, setFeedback] = useState(null);
+            const [score, setScore] = useState(0);
+            const recognitionRef = useRef(null);
+
+            const toggleRecording = () => {
+                if (isRecording) {
+                    if (recognitionRef.current) {
+                        recognitionRef.current.abort(); // Stop recording
+                    }
+                    setIsRecording(false);
+                } else {
+                    startRecording();
+                }
+            };
+
+            const startRecording = () => {
+                setFeedback(null);
+                setScore(0);
+                setIsRecording(true);
+                
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    alert("このブラウザは音声認識をサポートしていません。Chromeを使用してください。");
+                    setIsRecording(false);
+                    return;
+                }
+
+                // If a previous instance exists, nullify handlers before aborting to prevent error logs
+                if (recognitionRef.current) {
+                    recognitionRef.current.onerror = null;
+                    recognitionRef.current.onend = null;
+                    recognitionRef.current.abort();
+                }
+
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'yue-Hant-HK'; 
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                recognitionRef.current = recognition;
+
+                recognition.onresult = (e) => {
+                    const transcript = e.results[0][0].transcript;
+                    analyze(transcript);
+                    setIsRecording(false);
+                };
+                
+                recognition.onerror = (e) => {
+                    if (e.error === 'aborted') return; // Ignore aborted errors
+                    
+                    console.error("Speech Err:", e.error, e);
+                    setIsRecording(false);
+                    let msg = '音声が認識できませんでした。';
+                    const errorType = e.error;
+                    if (errorType === 'not-allowed' || errorType === 'service-not-allowed') {
+                         msg = 'マイク権限がブロックされました。設定を確認してください。';
+                    } else if (errorType === 'no-speech') {
+                         msg = '音声が検出されませんでした。';
+                    }
+                    setFeedback({ type: 'error', msg: msg });
+                };
+
+                try {
+                    recognition.start();
+                } catch(err) {
+                    console.error(err);
+                    setIsRecording(false);
+                }
+            };
+
+            const analyze = (transcript) => {
+                const target = selectedWord.word;
+                const variants = selectedWord.variants || [];
+                const clean = transcript.replace(/[.,!?。、]/g, '').trim();
+                
+                // Enhanced matching: Check if cleaned transcript matches target OR any variant
+                // Case insensitive
+                const isMatch = clean.includes(target) || variants.some(v => clean.toLowerCase().includes(v.toLowerCase()));
+                
+                if (isMatch) {
+                    setScore(Math.floor(Math.random() * 10) + 90); 
+                    setFeedback({type:'success', msg:'完璧です！(Excellent!)', heard: clean});
+                } else {
+                    setScore(Math.floor(Math.random() * 20) + 40);
+                    setFeedback({type:'warning', msg:'惜しい！もう一度トライ。', heard: clean});
+                }
+            };
+
+            return (
+                <div className="animate-fade-in space-y-6">
+                    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl p-8 text-white shadow-xl">
+                        <div className="flex items-center space-x-4 mb-4">
+                            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl backdrop-blur-sm">
+                                <i className="fas fa-microphone"></i>
+                            </div>
+                            <h2 className="text-2xl font-bold">AI 発音道場</h2>
+                        </div>
+                        <p className="opacity-90">單語を選んで、マイクに向かって発音してください。</p>
+                        <p className="text-xs opacity-75 mt-2 bg-indigo-700/30 inline-block px-3 py-1 rounded-full border border-indigo-400/30">
+                            <i className="fas fa-info-circle mr-1"></i> ヒント: 数字や入声（七、八、十）は短く発音しましょう
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-1 bg-white rounded-3xl border border-slate-100 p-4 shadow-sm h-[450px] overflow-y-auto">
+                            {practiceWords.map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => { 
+                                        // Stop recording if user switches words
+                                        if (isRecording) {
+                                            if (recognitionRef.current) recognitionRef.current.abort();
+                                            setIsRecording(false);
+                                        }
+                                        setSelectedWord(item); 
+                                        setFeedback(null); 
+                                        setScore(0); 
+                                    }}
+                                    className={`w-full text-left p-4 mb-2 rounded-2xl transition-all flex items-center space-x-3 ${
+                                        selectedWord.id === item.id 
+                                        ? 'bg-indigo-50 ring-2 ring-indigo-500 ring-offset-2' 
+                                        : 'hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-100">
+                                        <div className="w-8 h-8">
+                                            <item.Illustration />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className={`font-bold ${selectedWord.id === item.id ? 'text-indigo-700' : 'text-slate-700'}`}>{item.word}</div>
+                                        <div className="text-xs text-slate-400">{item.jyutping}</div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-100 p-8 shadow-sm flex flex-col items-center justify-center relative min-h-[400px]">
+                            <div className="w-40 h-40 mb-6 drop-shadow-md">
+                                <selectedWord.Illustration />
+                            </div>
+                            <div className="text-7xl font-black text-slate-800 mb-2 cantonese-text">{selectedWord.word}</div>
+                            <div className="text-2xl font-mono text-indigo-500 bg-indigo-50 px-6 py-2 rounded-full mb-8 font-bold">{selectedWord.jyutping}</div>
+                            
+                            <div className="flex space-x-6 mb-8">
+                                <AudioBtn text={selectedWord.word} />
+                                <button
+                                    onClick={toggleRecording} 
+                                    className={`w-20 h-20 rounded-full flex items-center justify-center text-2xl text-white font-bold shadow-xl transition-transform active:scale-95 ${
+                                        isRecording ? 'bg-red-500' : 'bg-indigo-600 hover:bg-indigo-700'
+                                    }`}
+                                >
+                                    {isRecording ? <div className="mic-wave"></div> : <i className="fas fa-microphone"></i>}
+                                </button>
+                            </div>
+
+                            {feedback && (
+                                <div className={`w-full max-w-sm p-4 rounded-2xl text-center animate-bounce-in ${feedback.type === 'error' ? 'bg-red-100 text-red-700' : feedback.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                                    <div className="text-4xl font-black mb-1">{score}</div>
+                                    <div className="font-bold">{feedback.msg}</div>
+                                    {feedback.heard && <div className="text-xs opacity-75 mt-1">聞いた音: {feedback.heard}</div>}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('tones');
+            return (
+                <div className="min-h-screen pb-12 bg-slate-50">
+                    <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200">
+                        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="bg-red-500 text-white p-1.5 rounded-lg font-black text-lg">HK</div>
+                                <span className="font-bold text-slate-800">広東語入門</span>
+                            </div>
+                        </div>
+                    </header>
+                    <main className="max-w-5xl mx-auto px-4 py-8">
+                        <div className="flex justify-center space-x-4 mb-10 overflow-x-auto py-2 scrollbar-hide">
+                            <NavButton label="声調 (Tones)" icon="fa-music" active={activeTab === 'tones'} onClick={() => setActiveTab('tones')} />
+                            <NavButton label="有気/無気" icon="fa-wind" active={activeTab === 'consonants'} onClick={() => setActiveTab('consonants')} />
+                            <NavButton label="AI 発音道場" icon="fa-microphone" active={activeTab === 'practice'} onClick={() => setActiveTab('practice')} />
+                        </div>
+                        {activeTab === 'tones' && <ToneSection />}
+                        {activeTab === 'consonants' && <ConsonantSection />}
+                        {activeTab === 'practice' && <PracticeCorner />}
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
