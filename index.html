@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>広東語初級コース - Unit 1 (插畫版)</title>
+    <title>広東語初級コース - Unit 1 </title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -43,6 +43,13 @@
             0% { height: 8px; transform: translateY(0); }
             100% { height: 24px; transform: translateY(-8px); }
         }
+        
+        /* Next Button Animation */
+        .pop-in { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
@@ -53,119 +60,122 @@
         const { useState, useEffect, useRef } = React;
 
         // --- 1. SVG Illustrations Library ---
-        
         const Icons = {
             Scroll: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <path d="M20 15C20 10 25 5 30 5H80C85 5 90 10 90 15V85C90 90 85 95 80 95H30C25 95 20 90 20 85V15Z" fill="#fef3c7" stroke="#d97706" strokeWidth="3"/>
-                    <path d="M35 25H75M35 40H75M35 55H60" stroke="#d97706" strokeWidth="3" strokeLinecap="round"/>
-                    <path d="M20 15C20 20 25 20 30 15" fill="none" stroke="#d97706" strokeWidth="3"/>
-                    <path d="M20 85C20 90 25 90 30 85" fill="none" stroke="#d97706" strokeWidth="3"/>
+                    <path d="M20 15C20 10 25 5 30 5H80C85 5 90 10 90 15V85C90 90 85 95 80 95H30C25 95 20 90 20 85V15Z" fill="#fef3c7" stroke="#d97706" strokeWidth="3" />
+                    <path d="M35 25H75M35 40H75M35 55H60" stroke="#d97706" strokeWidth="3" strokeLinecap="round" />
+                    <path d="M20 15C20 20 25 20 30 15" fill="none" stroke="#d97706" strokeWidth="3" />
+                    <path d="M20 85C20 90 25 90 30 85" fill="none" stroke="#d97706" strokeWidth="3" />
                 </svg>
             ),
             Book: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <rect x="15" y="20" width="70" height="60" rx="4" fill="#60a5fa"/>
-                    <path d="M15 20C15 20 25 15 50 15C75 15 85 20 85 20" fill="none" stroke="#2563eb" strokeWidth="3"/>
-                    <rect x="25" y="30" width="50" height="40" rx="2" fill="#dbeafe"/>
-                    <path d="M50 15V80" stroke="#2563eb" strokeWidth="2"/>
+                    <rect x="15" y="20" width="70" height="60" rx="4" fill="#60a5fa" />
+                    <path d="M15 20C15 20 25 15 50 15C75 15 85 20 85 20" fill="none" stroke="#2563eb" strokeWidth="3" />
+                    <rect x="25" y="30" width="50" height="40" rx="2" fill="#dbeafe" />
+                    <path d="M50 15V80" stroke="#2563eb" strokeWidth="2" />
                 </svg>
             ),
             Exam: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <rect x="25" y="10" width="50" height="80" fill="white" stroke="#94a3b8" strokeWidth="3"/>
-                    <path d="M35 25H65M35 40H65M35 55H65" stroke="#cbd5e1" strokeWidth="3" strokeLinecap="round"/>
-                    <path d="M40 70L50 80L75 50" fill="none" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="25" y="10" width="50" height="80" fill="white" stroke="#94a3b8" strokeWidth="3" />
+                    <path d="M35 25H65M35 40H65M35 55H65" stroke="#cbd5e1" strokeWidth="3" strokeLinecap="round" />
+                    <path d="M40 70L50 80L75 50" fill="none" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
             ),
             Clock: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <circle cx="50" cy="50" r="40" fill="#f3f4f6" stroke="#4b5563" strokeWidth="4"/>
-                    <path d="M50 20V50L70 50" fill="none" stroke="#ef4444" strokeWidth="4" strokeLinecap="round"/>
-                    <circle cx="50" cy="50" r="4" fill="#4b5563"/>
-                    <path d="M50 10V15 M90 50H85 M50 90V85 M10 50H15" stroke="#9ca3af" strokeWidth="3"/>
+                    <circle cx="50" cy="50" r="40" fill="#f3f4f6" stroke="#4b5563" strokeWidth="4" />
+                    <path d="M50 20V50L70 50" fill="none" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
+                    <circle cx="50" cy="50" r="4" fill="#4b5563" />
+                    <path d="M50 10V15 M90 50H85 M50 90V85 M10 50H15" stroke="#9ca3af" strokeWidth="3" />
                 </svg>
             ),
             Shop: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <path d="M20 40L25 20H75L80 40" fill="#f87171"/>
-                    <path d="M20 40H80V80H20V40Z" fill="#ffedd5"/>
-                    <path d="M20 40C20 45 26 45 26 40C26 45 32 45 32 40C32 45 38 45 38 40C38 45 44 45 44 40C44 45 50 45 50 40C50 45 56 45 56 40C56 45 62 45 62 40C62 45 68 45 68 40C68 45 74 45 74 40C74 45 80 45 80 40" fill="#f87171"/>
-                    <rect x="30" y="55" width="40" height="25" fill="#bae6fd"/>
+                    <path d="M20 40L25 20H75L80 40" fill="#f87171" />
+                    <path d="M20 40H80V80H20V40Z" fill="#ffedd5" />
+                    <path d="M20 40C20 45 26 45 26 40C26 45 32 45 32 40C32 45 38 45 38 40C38 45 44 45 44 40C44 45 50 45 50 40C50 45 56 45 56 40C56 45 62 45 62 40C62 45 68 45 68 40C68 45 74 45 74 40C74 45 80 45 80 40" fill="#f87171" />
+                    <rect x="30" y="55" width="40" height="25" fill="#bae6fd" />
                 </svg>
             ),
             Briefcase: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <rect x="20" y="35" width="60" height="45" rx="4" fill="#a8a29e"/>
-                    <path d="M35 35V25C35 20 40 20 40 20H60C60 20 65 20 65 25V35" fill="none" stroke="#44403c" strokeWidth="4"/>
-                    <path d="M20 45H80" stroke="#44403c" strokeWidth="2"/>
-                    <rect x="45" y="50" width="10" height="15" fill="#e7e5e4"/>
+                    <rect x="20" y="35" width="60" height="45" rx="4" fill="#a8a29e" />
+                    <path d="M35 35V25C35 20 40 20 40 20H60C60 20 65 20 65 25V35" fill="none" stroke="#44403c" strokeWidth="4" />
+                    <path d="M20 45H80" stroke="#44403c" strokeWidth="2" />
+                    <rect x="45" y="50" width="10" height="15" fill="#e7e5e4" />
                 </svg>
             ),
             Ball: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <circle cx="50" cy="50" r="40" fill="white" stroke="#1e293b" strokeWidth="3"/>
-                    <path d="M30 40L50 30L70 40L60 60L40 60Z" fill="#1e293b"/>
-                    <path d="M30 40L15 35 M50 30V10 M70 40L85 35 M60 60L75 80 M40 60L25 80" stroke="#1e293b" strokeWidth="2"/>
+                    <circle cx="50" cy="50" r="40" fill="white" stroke="#1e293b" strokeWidth="3" />
+                    <path d="M30 40L50 30L70 40L60 60L40 60Z" fill="#1e293b" />
+                    <path d="M30 40L15 35 M50 30V10 M70 40L85 35 M60 60L75 80 M40 60L25 80" stroke="#1e293b" strokeWidth="2" />
                 </svg>
             ),
             Grandma: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <circle cx="50" cy="50" r="35" fill="#fde68a"/>
-                    <path d="M25 45C25 30 35 20 50 20C65 20 75 30 75 45" fill="#d1d5db"/>
-                    <circle cx="50" cy="15" r="10" fill="#9ca3af"/>
-                    <circle cx="35" cy="55" r="4" fill="#1f2937"/>
-                    <circle cx="65" cy="55" r="4" fill="#1f2937"/>
-                    <path d="M30 60Q50 75 70 60" fill="none" stroke="#ef4444" strokeWidth="2"/>
-                    <g opacity="0.5"><circle cx="35" cy="55" r="8" fill="none" stroke="#4b5563" strokeWidth="2"/><circle cx="65" cy="55" r="8" fill="none" stroke="#4b5563" strokeWidth="2"/><path d="M43 55H57" stroke="#4b5563" strokeWidth="2"/></g>
+                    <circle cx="50" cy="50" r="35" fill="#fde68a" />
+                    <path d="M25 45C25 30 35 20 50 20C65 20 75 30 75 45" fill="#d1d5db" />
+                    <circle cx="50" cy="15" r="10" fill="#9ca3af" />
+                    <circle cx="35" cy="55" r="4" fill="#1f2937" />
+                    <circle cx="65" cy="55" r="4" fill="#1f2937" />
+                    <path d="M30 60Q50 75 70 60" fill="none" stroke="#ef4444" strokeWidth="2" />
+                    <g opacity="0.5">
+                        <circle cx="35" cy="55" r="8" fill="none" stroke="#4b5563" strokeWidth="2" />
+                        <circle cx="65" cy="55" r="8" fill="none" stroke="#4b5563" strokeWidth="2" />
+                        <path d="M43 55H57" stroke="#4b5563" strokeWidth="2" />
+                    </g>
                 </svg>
             ),
             Many: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <rect x="20" y="60" width="20" height="20" rx="4" fill="#fca5a5"/>
-                    <rect x="45" y="60" width="20" height="20" rx="4" fill="#fca5a5"/>
-                    <rect x="70" y="60" width="20" height="20" rx="4" fill="#fca5a5"/>
-                    <rect x="32" y="35" width="20" height="20" rx="4" fill="#93c5fd"/>
-                    <rect x="58" y="35" width="20" height="20" rx="4" fill="#93c5fd"/>
-                    <rect x="45" y="10" width="20" height="20" rx="4" fill="#86efac"/>
+                    <rect x="20" y="60" width="20" height="20" rx="4" fill="#fca5a5" />
+                    <rect x="45" y="60" width="20" height="20" rx="4" fill="#fca5a5" />
+                    <rect x="70" y="60" width="20" height="20" rx="4" fill="#fca5a5" />
+                    <rect x="32" y="35" width="20" height="20" rx="4" fill="#93c5fd" />
+                    <rect x="58" y="35" width="20" height="20" rx="4" fill="#93c5fd" />
+                    <rect x="45" y="10" width="20" height="20" rx="4" fill="#86efac" />
                 </svg>
             ),
             Drag: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <rect x="50" y="30" width="40" height="40" fill="#d1d5db" stroke="#4b5563" strokeWidth="2"/>
-                    <path d="M50 50H20" stroke="#1f2937" strokeWidth="4"/>
-                    <path d="M25 40L15 50L25 60" fill="none" stroke="#1f2937" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-                    <circle cx="60" cy="75" r="5" fill="#4b5563"/>
-                    <circle cx="80" cy="75" r="5" fill="#4b5563"/>
+                    <rect x="50" y="30" width="40" height="40" fill="#d1d5db" stroke="#4b5563" strokeWidth="2" />
+                    <path d="M50 50H20" stroke="#1f2937" strokeWidth="4" />
+                    <path d="M25 40L15 50L25 60" fill="none" stroke="#1f2937" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="60" cy="75" r="5" fill="#4b5563" />
+                    <circle cx="80" cy="75" r="5" fill="#4b5563" />
                 </svg>
             ),
             Handshake: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <path d="M20 60L40 50L50 60L40 70Z" fill="#fdba74"/>
-                    <path d="M80 60L60 50L50 60L60 70Z" fill="#ffcc80"/>
-                    <path d="M10 80L20 60" stroke="#60a5fa" strokeWidth="10" strokeLinecap="round"/>
-                    <path d="M90 80L80 60" stroke="#4ade80" strokeWidth="10" strokeLinecap="round"/>
+                    <path d="M20 60L40 50L50 60L40 70Z" fill="#fdba74" />
+                    <path d="M80 60L60 50L50 60L60 70Z" fill="#ffcc80" />
+                    <path d="M10 80L20 60" stroke="#60a5fa" strokeWidth="10" strokeLinecap="round" />
+                    <path d="M90 80L80 60" stroke="#4ade80" strokeWidth="10" strokeLinecap="round" />
                 </svg>
             ),
             Gift: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <rect x="20" y="40" width="60" height="45" fill="#f472b6"/>
-                    <rect x="45" y="40" width="10" height="45" fill="#fce7f3"/>
-                    <rect x="15" y="30" width="70" height="15" rx="2" fill="#ec4899"/>
-                    <path d="M50 30L40 15C35 10 45 5 50 15C55 5 65 10 60 15L50 30" fill="#fbcfe8"/>
+                    <rect x="20" y="40" width="60" height="45" fill="#f472b6" />
+                    <rect x="45" y="40" width="10" height="45" fill="#fce7f3" />
+                    <rect x="15" y="30" width="70" height="15" rx="2" fill="#ec4899" />
+                    <path d="M50 30L40 15C35 10 45 5 50 15C55 5 65 10 60 15L50 30" fill="#fbcfe8" />
                 </svg>
             ),
             Tea: () => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <path d="M25 35H75V70C75 80 65 85 50 85C35 85 25 80 25 70V35Z" fill="#fffbeb" stroke="#d97706" strokeWidth="2"/>
-                    <path d="M75 40C85 40 85 60 75 60" fill="none" stroke="#d97706" strokeWidth="3"/>
-                    <path d="M35 20L40 10 M50 20L50 8 M65 20L60 10" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M25 35H75V70C75 80 65 85 50 85C35 85 25 80 25 70V35Z" fill="#fffbeb" stroke="#d97706" strokeWidth="2" />
+                    <path d="M75 40C85 40 85 60 75 60" fill="none" stroke="#d97706" strokeWidth="3" />
+                    <path d="M35 20L40 10 M50 20L50 8 M65 20L60 10" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" />
                 </svg>
             ),
-            // Generic Number Icon Component to avoid repetitive code
+            // Generic Number Icon Component
             NumberIcon: ({ num }) => (
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                    <circle cx="50" cy="50" r="45" fill="#eff6ff" stroke="#3b82f6" strokeWidth="2"/>
+                    <circle cx="50" cy="50" r="45" fill="#eff6ff" stroke="#3b82f6" strokeWidth="2" />
                     <text x="50" y="70" textAnchor="middle" fontSize="60" fill="#2563eb" fontWeight="bold" fontFamily="monospace">{num}</text>
                 </svg>
             )
@@ -242,7 +252,7 @@
             },
             { 
                 id: 'n6', word: "六點鐘", jyutping: "luk6 dim2 zung1", Illustration: () => <Icons.NumberIcon num="6" />, meaning: "六時 (6 O'clock)", difficulty: 2, 
-                variants: ["六點鐘", "luk dim zung", "6 dim zung", "six dim zung", "lok dim zung", "6點鐘", "6点钟", "六点钟", "六點", "6點"] 
+                variants: ["六點鐘", "luk dim zung", "6 dim zung", "six dim zung", "lok dim zung", "6點鐘", "6点钟", "六点钟", "六點", "6點", "6:00", "6点", "六点"] 
             },
             { 
                 id: 'n7', word: "七月", jyutping: "cat1 jyut6", Illustration: () => <Icons.NumberIcon num="7" />, meaning: "七月 (July)", difficulty: 3, 
@@ -429,11 +439,18 @@
         );
 
         const PracticeCorner = () => {
-            const [selectedWord, setSelectedWord] = useState(practiceWords[0]);
+            const getRandomWord = () => practiceWords[Math.floor(Math.random() * practiceWords.length)];
+            const [selectedWord, setSelectedWord] = useState(getRandomWord());
             const [isRecording, setIsRecording] = useState(false);
             const [feedback, setFeedback] = useState(null);
             const [score, setScore] = useState(0);
             const recognitionRef = useRef(null);
+
+            // Initialize with a random word on mount
+            useEffect(() => {
+                // Ensure we start with a word
+                if(!selectedWord) setSelectedWord(getRandomWord());
+            }, []);
 
             const toggleRecording = () => {
                 if (isRecording) {
@@ -479,7 +496,7 @@
                 };
                 
                 recognition.onerror = (e) => {
-                    if (e.error === 'aborted') return; // Ignore aborted errors
+                    if (e.error === 'aborted') return;
                     
                     console.error("Speech Err:", e.error, e);
                     setIsRecording(false);
@@ -506,8 +523,6 @@
                 const variants = selectedWord.variants || [];
                 const clean = transcript.replace(/[.,!?。、]/g, '').trim();
                 
-                // Enhanced matching: Check if cleaned transcript matches target OR any variant
-                // Case insensitive
                 const isMatch = clean.includes(target) || variants.some(v => clean.toLowerCase().includes(v.toLowerCase()));
                 
                 if (isMatch) {
@@ -519,82 +534,112 @@
                 }
             };
 
+            const nextQuestion = () => {
+                if (isRecording) {
+                    if (recognitionRef.current) recognitionRef.current.abort();
+                    setIsRecording(false);
+                }
+                
+                let next = getRandomWord();
+                // Ensure we get a new word if possible
+                if (practiceWords.length > 1) {
+                    while (next.id === selectedWord.id) {
+                        next = getRandomWord();
+                    }
+                }
+                
+                setSelectedWord(next);
+                setFeedback(null);
+                setScore(0);
+            };
+
             return (
                 <div className="animate-fade-in space-y-6">
-                    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl p-8 text-white shadow-xl">
-                        <div className="flex items-center space-x-4 mb-4">
-                            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl backdrop-blur-sm">
-                                <i className="fas fa-microphone"></i>
+                    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between">
+                        <div>
+                            <div className="flex items-center space-x-4 mb-2">
+                                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl backdrop-blur-sm">
+                                    <i className="fas fa-microphone"></i>
+                                </div>
+                                <h2 className="text-2xl font-bold">AI 発音道場</h2>
                             </div>
-                            <h2 className="text-2xl font-bold">AI 発音道場</h2>
+                            <p className="opacity-90 text-sm md:text-base">ランダムに出題される単語を発音してみましょう！</p>
                         </div>
-                        <p className="opacity-90">單語を選んで、マイクに向かって発音してください。</p>
-                        <p className="text-xs opacity-75 mt-2 bg-indigo-700/30 inline-block px-3 py-1 rounded-full border border-indigo-400/30">
-                            <i className="fas fa-info-circle mr-1"></i> ヒント: 数字や入声（七、八、十）は短く発音しましょう
-                        </p>
+                        <div className="mt-4 md:mt-0">
+                             <button 
+                                onClick={nextQuestion}
+                                className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center"
+                            >
+                                <i className="fas fa-forward mr-2"></i> Skip
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="lg:col-span-1 bg-white rounded-3xl border border-slate-100 p-4 shadow-sm h-[450px] overflow-y-auto">
-                            {practiceWords.map((item) => (
-                                <button
-                                    key={item.id}
-                                    onClick={() => { 
-                                        // Stop recording if user switches words
-                                        if (isRecording) {
-                                            if (recognitionRef.current) recognitionRef.current.abort();
-                                            setIsRecording(false);
-                                        }
-                                        setSelectedWord(item); 
-                                        setFeedback(null); 
-                                        setScore(0); 
-                                    }}
-                                    className={`w-full text-left p-4 mb-2 rounded-2xl transition-all flex items-center space-x-3 ${
-                                        selectedWord.id === item.id 
-                                        ? 'bg-indigo-50 ring-2 ring-indigo-500 ring-offset-2' 
-                                        : 'hover:bg-slate-50'
-                                    }`}
-                                >
-                                    <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-100">
-                                        <div className="w-8 h-8">
-                                            <item.Illustration />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className={`font-bold ${selectedWord.id === item.id ? 'text-indigo-700' : 'text-slate-700'}`}>{item.word}</div>
-                                        <div className="text-xs text-slate-400">{item.jyutping}</div>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-100 p-8 shadow-sm flex flex-col items-center justify-center relative min-h-[400px]">
-                            <div className="w-40 h-40 mb-6 drop-shadow-md">
-                                <selectedWord.Illustration />
-                            </div>
-                            <div className="text-7xl font-black text-slate-800 mb-2 cantonese-text">{selectedWord.word}</div>
-                            <div className="text-2xl font-mono text-indigo-500 bg-indigo-50 px-6 py-2 rounded-full mb-8 font-bold">{selectedWord.jyutping}</div>
+                    {/* Main Card Container */}
+                    <div className="max-w-2xl mx-auto">
+                        <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-xl flex flex-col items-center justify-center relative min-h-[450px] relative overflow-hidden">
                             
-                            <div className="flex space-x-6 mb-8">
-                                <AudioBtn text={selectedWord.word} />
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-400 to-purple-400"></div>
+                            
+                            {/* Word Display */}
+                            <div className="mb-8 text-center">
+                                <div className="w-40 h-40 mx-auto mb-6 drop-shadow-md transform hover:scale-105 transition duration-500">
+                                    <selectedWord.Illustration />
+                                </div>
+                                <div className="text-7xl font-black text-slate-800 mb-3 cantonese-text tracking-tight">{selectedWord.word}</div>
+                                <div className="flex items-center justify-center space-x-3">
+                                    <span className="text-2xl font-mono text-indigo-500 bg-indigo-50 px-6 py-2 rounded-full font-bold border border-indigo-100">
+                                        {selectedWord.jyutping}
+                                    </span>
+                                    <AudioBtn text={selectedWord.word} />
+                                </div>
+                                <div className="mt-4 text-slate-400 font-medium">{selectedWord.meaning}</div>
+                            </div>
+                            
+                            {/* Controls */}
+                            <div className="flex items-center justify-center space-x-8 w-full">
                                 <button
                                     onClick={toggleRecording} 
-                                    className={`w-20 h-20 rounded-full flex items-center justify-center text-2xl text-white font-bold shadow-xl transition-transform active:scale-95 ${
-                                        isRecording ? 'bg-red-500' : 'bg-indigo-600 hover:bg-indigo-700'
+                                    className={`w-24 h-24 rounded-full flex items-center justify-center text-3xl text-white font-bold shadow-xl transition-all transform active:scale-95 hover:shadow-2xl ${
+                                        isRecording 
+                                        ? 'bg-red-500 ring-4 ring-red-200 animate-pulse' 
+                                        : 'bg-gradient-to-br from-indigo-500 to-purple-600 hover:scale-105 ring-4 ring-indigo-100'
                                     }`}
                                 >
                                     {isRecording ? <div className="mic-wave"></div> : <i className="fas fa-microphone"></i>}
                                 </button>
                             </div>
+                            
+                            {isRecording && <p className="mt-4 text-slate-500 font-medium animate-pulse">聞いています...</p>}
 
+                            {/* Feedback & Next Button */}
                             {feedback && (
-                                <div className={`w-full max-w-sm p-4 rounded-2xl text-center animate-bounce-in ${feedback.type === 'error' ? 'bg-red-100 text-red-700' : feedback.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
-                                    <div className="text-4xl font-black mb-1">{score}</div>
-                                    <div className="font-bold">{feedback.msg}</div>
-                                    {feedback.heard && <div className="text-xs opacity-75 mt-1">聞いた音: {feedback.heard}</div>}
+                                <div className={`mt-8 w-full max-w-md p-6 rounded-2xl text-center animate-fade-in border-2 ${
+                                    feedback.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-orange-50 border-orange-200 text-orange-800'
+                                }`}>
+                                    <div className="flex items-center justify-center space-x-2 mb-1">
+                                        <i className={`fas ${feedback.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} text-2xl`}></i>
+                                        <span className="text-xl font-bold">{feedback.msg}</span>
+                                    </div>
+                                    {feedback.heard && <div className="text-sm opacity-75 mb-4">聞いた音: 「{feedback.heard}」</div>}
+                                    
+                                    {/* Next Button appears on success */}
+                                    {feedback.type === 'success' && (
+                                        <button 
+                                            onClick={nextQuestion}
+                                            className="mt-2 bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center mx-auto pop-in"
+                                        >
+                                            下一題 (Next) <i className="fas fa-arrow-right ml-2"></i>
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>
+                        
+                        <p className="text-center text-xs text-slate-400 mt-6">
+                            <i className="fas fa-lightbulb text-yellow-400 mr-1"></i> 
+                            ヒント: 正解すると自動的に次の問題へ進むボタンが表示されます。
+                        </p>
                     </div>
                 </div>
             );
@@ -604,16 +649,16 @@
             const [activeTab, setActiveTab] = useState('tones');
             return (
                 <div className="min-h-screen pb-12 bg-slate-50">
-                    <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200">
+                    <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 shadow-sm">
                         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                                <div className="bg-red-500 text-white p-1.5 rounded-lg font-black text-lg">HK</div>
-                                <span className="font-bold text-slate-800">広東語入門</span>
+                                <div className="bg-gradient-to-br from-red-500 to-pink-600 text-white w-10 h-10 flex items-center justify-center rounded-xl font-black text-lg shadow-md">HK</div>
+                                <span className="font-bold text-slate-800 tracking-tight">広東語入門</span>
                             </div>
                         </div>
                     </header>
                     <main className="max-w-5xl mx-auto px-4 py-8">
-                        <div className="flex justify-center space-x-4 mb-10 overflow-x-auto py-2 scrollbar-hide">
+                        <div className="flex justify-center space-x-2 mb-10 overflow-x-auto py-2 scrollbar-hide">
                             <NavButton label="声調 (Tones)" icon="fa-music" active={activeTab === 'tones'} onClick={() => setActiveTab('tones')} />
                             <NavButton label="有気/無気" icon="fa-wind" active={activeTab === 'consonants'} onClick={() => setActiveTab('consonants')} />
                             <NavButton label="AI 発音道場" icon="fa-microphone" active={activeTab === 'practice'} onClick={() => setActiveTab('practice')} />
